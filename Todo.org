@@ -1,0 +1,19 @@
+* Todo list for Moons 2018-07-03
+[ ] convert the current generator into an incremental renderer
+	as the calendar gets the ephemeris for each month
+	and then rerenders the visible months with ephemerides
+[ ] this could be a continuous scrolling moons calendar
+[ ] if we could render the svg for the calendar into text
+	then people could take that to the printer.
+[ ] separate the computational from the rendering, it's a bit
+	interleaved at the moment
+[ ] do the computation in the web worker, have it post back the
+	results, so it needs to know the required values, meanwhile 
+	the generator posts new requests as the old are completed.
+[ ] run multiple workers in parallel
+[ ] draw planets, nodes, gees, zodiacal signs in the top and bottom margins
+	with the day numbers.
+[ ] provide a simple ephemeris page, too, or pages by date
+[ ] provide navigational stars locations
+[ ] work out how to get time and location fixes from pictures of the
+	sky

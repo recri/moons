@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link REV=MADE HREF="mailto:info@elf.org" />
+  <meta name="GENERATOR" content="Roger E Critchlow Jr" />
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <meta name="DESCRIPTION" content="A novel lunar calendar showing the moon's phases aligned across multiple months." />
+  <meta name="KEYWORDS" content="lunar calendar, moon calendar, moon phases, moons calendar, graphic calendar, javascript, svg" />
+  <title>moons calendar implementation</title>
+  <link type="text/css" rel="stylesheet" media="all" href="/style/style.css" />
+  <link type="text/css" rel="stylesheet" media="print" href="/style/print.css" />
+</head>
+<body class="sidebar-left">
+  <div id="header-region" class="clear-block"></div>
+
+  <div id="wrapper">
+
+    <div id="container" class="clear-block">
+
+      <div id="moon-header">
+	<div id="graphics" style="margin: 20px; border: 0">
+	  <object id="calendar" data="calendar.svg" width="710px" height="295">
+	    <img src="1x880x160x4.png" width="880" height="160" alt="2009 first quarter moons calendar" />
+	    <center>
+	      <strong>For best viewing, these pages need a browser which supports SVG and Javascript.<br/>
+		Recent releases of <a href="http://mozilla.org">Firefox</a> work fine.<br/>
+		Recent releases of <a href="http://opera.com">Opera</a> work fine.<br/>
+		Microsoft's Internet Explorer does not work until you install the Adobe
+		<a href="http://www.adobe.com/svg/viewer/install/main.html">SVG Viewer</a>.<br/>
+		The links to larger images won't work until you take care of this problem.</strong>
+	    </center>
+	  </object>
+	</div> <!-- #graphics -->
+      </div> <!-- #moon-header -->
+
+      <div id="sidebar-left" class="sidebar">
+	<div id="block-menu-primary-links" class="clear-block block block-menu">
+	  <p>
+	    <i>Moon &amp; sun are passing figures of countless generations, and
+	      years coming or going wanderers too.  Drifting life away on a
+	      boat or meeting age leading a horse by the mouth, each day is a
+	      journey and the journey itself home.</i>
+	  </p><p>
+	    <small>Basho, <i>Back Roads To Far Towns</i>,
+	      translated by Cid Corman and Kamaike Susumu.</small>
+	  </p>
+	  <br/>
+	  <br/>
+	  <b>Larger Images</b><br/>
+	  <br/>
+	  <b>13 Moons</b><br/>
+	  <a href="calendar.svg?vw=1024&amp;vh=425&amp;m=13&amp;b=2">1024x425</a><br/>
+	  <a href="calendar.svg?vw=1350&amp;vh=560&amp;m=13&amp;b=2">1350x560</a><br/>
+	  <br/>
+	  <b>26 Moons</b><br/>
+	  <a href="calendar.svg?vw=1024&amp;vh=700&amp;m=26&amp;b=2">1024x700</a><br/>
+	  <a href="calendar.svg?vw=1350&amp;vh=920&amp;m=26&amp;b=2">1350x920</a><br/>
+	  <br/>
+	  <b>39 Moons</b><br/>
+	  <a href="calendar.svg?vw=1024&amp;vh=989&amp;m=39&amp;b=2">1024x700</a><br/>
+	  <a href="calendar.svg?vw=1350&amp;vh=1304&amp;m=39&amp;b=2">1350x920</a><br/>
+	  <br/>
+	</div> <!-- #block-menu-primary-links -->
+      </div> <!-- #sidebar-left -->
+
+      <div id="center">
+	<div id="squeeze">
+	  <div class="right-corner">
+	    <div class="left-corner">
+
+              <div class="clear-block">
+
+		<b>The Moons Calendar Implementation</b>
+		<p>
+		</p><p>
+		  The original implementation of this calendar was produced in
+		  1975 hand drawn on brown wrapping paper.  Another version was drawn
+		  on a drum plotter driven by an IBM 1130 running an ephemeris coded
+		  on punched cards in FORTRAN.
+		  Both of these showed the new, full, and quarter moons, 
+		  and the quarter moons were drawn backwards, as was only noticed
+		  and reported by Joan's father.
+		  The illuminated limb, the circular, lit edge of the moon, is always
+		  closer to the sun than the dark limb.
+		  This original calendar was printed in the college printshop in black
+		  on grey, hand colored with white pencil, and sold in the cafeteria.
+		</p><p>
+		  Another version was produced around 1999 using an ephemeris coded in C
+		  and loaded into Tcl/Tk as an extension.
+		</p><p>
+		  The current version is an exercise in open standards browser programming.
+		  All the computations for the calendar are performed in your browser in
+		  <a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm">Ecmascript</a>,
+		  the standardization of Javascript by <a href="http://www.ecma-international.org">ECMA</a>.
+		  The graphical depiction of the calendar is done using
+		  <a href="http://www.w3.org/TR/SVG/index.html">SVG</a>, 
+		  the structured vector graphics language defined by the
+		  <a href="http://www.w3.org">World Wide Web Consortium</a>.
+		</p><p>
+		  The javascript sources for the Moons calendar consist of
+		  <a href="js/ephemerides.js">emphemerides.js</a> for computing the
+		  positions of the sun, moon, and planets,
+		  <a href="js/ephemimages.js">ephemimages.js</a> for computing the
+		  moon image painted for each phase,
+		  <a href="js/parse_search.js">parse_search.js</a> for handling the
+		  parsing of the window.location.search string to fetch parameters,
+		  and <a href="js/generate.js">generate.js</a> to organize the calculations
+		  and produce the SVG graphics for the calendar.
+		</p><p>
+		  The <a href="js/ephemerides.js">ephemeris</a> is taken from Paul Schlyter's
+		  <a href="http://www.stjarnhimlen.se/comp/ppcomp.html">
+		    low precision ephemeris</a>, where you should go for a more detailed
+		  explanation.  This computation is good to 1-2 arc minutes
+		  accuracy, and that accuracy is good for some period of years around 2000.
+		</p><p<body class="sidebar-left">
+>
+		  The <a href="js/ephemimages.js">moon image</a> generates a sequence
+		  of points to outline the illuminated part of the moon for a given separation
+		  from the sun in degrees along the ecliptic.
+		</p><p>
+		  The <a href="js/parse_search.js">window.location.search parser</a> takes the
+		  string containing the search part of the url, which looks like this "?vw=1024&vh=480&d=40",
+		  and parses it into a javascript object as {vw: 1024, vh: 480, d: 40}.  Other
+		  details are also handled, such as aliasing abbreviated names into longer names,
+		  restricting the acceptable set of names, supplying default values, and converting
+		  strings to the correct type.
+		</p><p>
+		  The <a href="js/generate.js">calendar generator</a> takes a start date, a window size,
+		  a number of days width, a number of months height and arranges to draw a calendar.
+		  There are several other partially or completely unimplemented options in the source
+		  code.
+		</p><p>
+		  This code is copyright &copy; 2006 by Roger E Critchlow Jr, Santa Fe, New Mexico, USA.
+		</p><p>
+		  This program is free software; you can redistribute it and/or
+		  modify it under the terms of the GNU General Public License
+		  as published by the Free Software Foundation; either version 2
+		  of the License, or (at your option) any later version.
+		</p><p>
+		  This program is distributed in the hope that it will be useful,
+		  but <strong>WITHOUT ANY WARRANTY</strong>; without even the implied warranty of
+		  <strong>MERCHANTABILITY</strong> or <strong>FITNESS FOR A PARTICULAR PURPOSE</strong>.
+		  See the GNU General Public License for more details.
+		</p><p>
+		  A copy of the GNU General Public License may be found at:
+		  <a href="http://www.gnu.org/copyleft/gpl.html">gnu.org</a>.
+		</p><p>
+		  The Moons Calendar is Copyright &#169; 2006,2009 by Roger E Critchlow Jr,
+		  Santa Fe, New Mexico, USA.
+		  All rights reserved.
+		  Permission granted for reproduction for personal or educational use.
+		</p>
+	      </div> <!-- /.clear-block -->
+
+	      <div id="footer">
+		<center>
+		  &copy; Copyright 1997-2008 by
+		  <address><a href="mailto:info@elf.org">Roger E Critchlow Jr</a></address>
+		  Santa Fe, NM, USA<br/>
+		  <!-- hhmts start -->Last modified: Tue Jan 13 14:06:24 MST 2009 <!-- hhmts end -->
+		  <address><a href="http://www.elf.org">elf.org</a></address>
+		</center>
+	      </div>
+
+	    </div> <!-- /.left-corner -->
+	  </div> <!-- /.right-corner -->
+	</div> <!-- /#squeeze -->
+      </div> <!-- /#center -->
+    </div> <!-- /#container -->
+  </div> <!-- /#wrapper -->
+  <!-- /layout -->
+</body>
+</html>
+

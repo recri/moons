@@ -1,0 +1,6 @@
+node_modul*
+build/
+server/
+polymer-serve.log
+npm-debug.log
+*~

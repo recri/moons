@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link REV=MADE HREF="mailto:info@elf.org"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="DESCRIPTION" content="A novel lunar calendar showing the moon's phases aligned across multiple months." />
+  <meta name="KEYWORDS" content="lunar calendar, moon calendar, moon phases, moons calendar, graphic calendar, javascript, svg" />
+  <title>moons calendar</title>
+  <link type="text/css" rel="stylesheet" media="all" href="/style/style.css" />
+  <link type="text/css" rel="stylesheet" media="print" href="/style/print.css" />
+</head>
+<body class="sidebar-left">
+  <div id="header-region" class="clear-block"></div>
+  
+  <div id="wrapper">
+
+    <div id="container" class="clear-block">
+
+      <div id="moon-header">
+	<div id="graphics" style="margin: 20px; border: 0">
+	  <img src="1x880x160x4.png" width="880" height="160" alt="2009 first quarter moons calendar" />
+	</div>
+      </div>
+
+      <div id="sidebar-left" class="sidebar">
+	<div id="block-menu-primary-links" class="clear-block block block-menu">
+	  <p>
+	    <i>Moon &amp; sun are passing figures of countless generations, and
+	      years coming or going wanderers too.  Drifting life away on a
+	      boat or meeting age leading a horse by the mouth, each day is a
+	      journey and the journey itself home.</i>
+	  </p><p>
+	    <small>Basho, <i>Back Roads To Far Towns</i>,
+	      translated by Cid Corman and Kamaike Susumu.</small>
+	  </p>
+	  <br/>
+	  <br/>
+	  <br/>
+	  <b>Sample Calendars</b><br/>
+	  <br/>
+	  <a href="1x880x160x4.png">4 Moons, 8 phases</a><br/>
+	  <a href="1x880x160x4x16.png">4 Moons, 16 phases</a><br/>
+	  <a href="1x880x160x4x30.png">4 Moons, 30 phases</a><br/>
+	  <br/>
+	  <a href="1x880x600x26.png">2 Years</a><br/>
+	  <a href="1x880x1340x63.png">5 Years</a><br/>
+	  <br/>
+	  <a href="1x1320x900x26.png">Larger 2 Years</a><br/>
+	  <a href="1x1320x2010x63.png">Larger 5 Years</a><br/>
+	  <br/>
+	  <b>How They're Made</b><br/>
+	  <br/>
+	  <a href="colophon.html">js+svg+xml</a><br/>
+	  <br/>
+	</div>
+      </div>
+
+      <div id="center">
+	<div id="squeeze">
+	  <div class="right-corner">
+	    <div class="left-corner">
+
+              <div class="clear-block">
+		<b>The Moons Calendar</b>
+		<p>
+		  The Moons Calendar is a lunar calendar which illustrates how the moon's appearance,
+		  the moon's position in the sky, and the days of the lunar month are related.
+		  Rather than superimposing the moon's appearance on a standard calendar,
+		  the Moons Calendar displays each lunar month as a horizontal strip of days stretching from right to left.
+		  This strip of days represents the roughly
+		  <a href="faq.html#390">390 degrees</a>
+		  that the moon travels through the lunar month from new moon to new moon.
+		  The new moon which initiates the month is drawn at the far right followed by the waxing crescent, first quarter, waxing
+		  gibbous, full, waning gibbous, last quarter, waning crescent, and subsequent new moon in order from right to left.
+		</p><p>
+		  This layout imitates what we see through the lunar month from the northern hemisphere.
+		  In the temperate latitudes of the northern hemisphere, 
+		  the moon spends <a href="faq.html#mostly">most of its time to our south</a>,
+		  so the calendar is oriented as if you were facing south.
+		  The daily motion of the moon is to rise in the east and set in the west, 
+		  which is a motion from left to right (east to west) when facing south.
+		  But the motion of the moon through the month goes in the opposite direction, 
+		  from right to left (west to east) across the sky.
+		  In the <a href="faq.html#south">southern temperate regions</a>, <a href="faq.html#tropic">tropical regions</a>,
+		  and <a href="faq.html#polar">polar regions</a> you would see lunar month differently.
+		</p><p>
+		  To see how the layout works you need to observe the moon for a few days at approximately the same time each day.
+		  For instance, if you see the first crescent moon after a new moon at sunset, 
+		  the moon will be in the west, slightly to the east of the setting sun.
+		  On the next evening a larger crescent moon should be visible at sunset.
+		  This second crescent moon of the month will be further to the left (east) from the setting sun than it was on the day before.
+		  If you continue tracking the moon at sunset, you will see it grow larger and appear further to the left (to the east) each day.
+		</p><p>
+		  In the Moons Calendar we draw the phases of the moon in the same order that they appear in the sky.
+		  The waxing crescent moon is drawn to the left (east) of the new moon,
+		  the first quarter moon is drawn to the left (east) of the waxing crescent moon,
+		  and so on through the lunar month.
+		  Each moon phase symbol is drawn centered on the date and time UTC at which the moon phase occurs.
+		  The phases depicted are exact eighths of a lunar period.
+		  Midnight UTC is marked either by ticks or by a vertical line,
+		  and the vertical lines also mark the beginning of each calendar month.
+		  The days of each calendar month are numbered in the lower right corner of the day's square.
+		  The year and month of the beginning (end) of each lunar month appear in the right (left) margin, 
+		</p><p>
+		  Adjacent lunar months are aligned by the full moons.
+		  The other phases do not align, they form waves.
+		  These waves show the variation in the speed of the moon in its orbit.
+		  When the moon is closer to the earth, it moves faster.
+		  When the earth and moon together are closer to the sun, they both move faster.
+		  These variations combine to make the different parts of the lunar month pass more or less quickly.
+		</p><p>
+		  This calendar is implemented by open source software which can compute
+		  and display the calendar in most web browsers.  The details are described
+		  <a href="colophon.html">here</a>.  The images on this page are static.
+		</p><p>
+		  The Moons Calendar is Copyright &#169; 2006, 2009 by Roger E Critchlow Jr,
+		  Santa Fe, New Mexico, USA.
+		  All rights reserved.
+		  Permission granted for reproduction for personal or educational use.
+		</p>
+	      </div> <!-- /.clear-block -->
+
+	      <div id="footer">
+		<center>
+		  &copy; Copyright 2006, 2009 by
+		  <address><a href="mailto:info@elf.org">Roger E Critchlow Jr</a></address>
+		  Santa Fe, NM, USA<br/>
+		  <!-- hhmts start -->Last modified: Tue Jan 13 14:40:55 MST 2009 <!-- hhmts end -->
+		  <address><a href="http://www.elf.org">elf.org</a></address>
+		</center>
+	      </div>
+
+	    </div> <!-- /.left-corner -->
+	  </div> <!-- /.right-corner -->
+	</div> <!-- /#squeeze -->
+      </div> <!-- /#center -->
+    </div> <!-- /#container -->
+  </div> <!-- /#wrapper -->
+  <!-- /layout -->
+
+</body>
+</html>
