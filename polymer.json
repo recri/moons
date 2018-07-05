@@ -1,14 +1,16 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/components/hp15c-app.js",
-  "sources": [
+  "shell": "src/components/moons-app.js",
+    "sources": [
       "images/**/*",
       "fonts/*"
   ],
   "extraDependencies": [
-    "manifest.json",
-    "node_modules/@webcomponents/webcomponentsjs/**",
-    "push-manifest.json"
+      "manifest.json",
+      "node_modules/@webcomponents/webcomponentsjs/**",
+      "push-manifest.json",
+      "src/components/js/generate.js",
+      "src/components/js/ephemerides.js"
   ],
   "builds": [
     {

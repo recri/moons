@@ -131,10 +131,8 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	      `${d.getUTCFullYear()}.${1+d.getUTCMonth()}.${d.getUTCDate()}`;
 
 	// return svg templates
-	const generate_title = () => {
-	    console.log('generate_title called');
-	    return text_node(width/2, fy - scale/2, "calendartitle", `${format_date(this.min_date)} - Moons - ${format_date(this.max_date)}`);
-	}
+	const generate_title = () => 
+	      text_node(width/2, fy - scale/2, "calendartitle", `${format_date(this.min_date)} - Moons - ${format_date(this.max_date)}`);
 	const generate_month = (month, index) => {
 	    const mnew0 = month.m_date[pnew0], mfull = month.m_date[pfull], mnew1 = month.m_date[pnew1];
 	    const tnew0 = mnew0.getTime(), tfull = mfull.getTime(), tnew1 = mnew1.getTime();
@@ -219,13 +217,11 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 </g>`
 	}
 
-	const generate_copyright = () => {
-	    console.log('generate_copyright called');
-	    return text_node(width/2, fy+(months+1)*scale, "copyright",
+	const generate_copyright = () =>
+	      text_node(width/2, fy+(months+1)*scale, "copyright",
 			`${format_date(this.min_date)} - Moons - ${format_date(this.max_date)}, `+
 			     "Copyright \xa9 2018 by Roger E Critchlow Jr, Charlestown, MA, USA, "+
 			     "http://elf.org/moons");
-	}
 
 	// console.log(`draw.title = ${draw.title}, draw.copyright = ${draw.copyright}, month_data = ${month_data}`);
 	// if (month_data) console.log(`month_data.length = ${month_data.length}, months = ${months}`);
