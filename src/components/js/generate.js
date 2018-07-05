@@ -34,16 +34,20 @@ importScripts('./ephemerides.js');
 //        "\u2648 - \u2649 - \u264a - \u264b - \u264c - \u264d - \u264e - \u264f - \u2650 - \u2651 - \u2652 - \u2653 - "+  // zodiac signs
 //        "\u260a - \u260b - \u260c - \u260d"));            // ascending and descending nodes, conjunction and opposition
 
+const millis_per_day = 24*60*60*1000;      // milliseconds in a day
+const millis_per_degree = (27.3*24*60*60*1000) / 360; // milliarcseconds per degree???
+
 //
 // compute the n phases of the moon
 // starting from the nearest new moon to date
 // and working forward in time
 //
 const compute_month = (c, date, n) => {
-    c.month_date = [];
+    // console.log(`compute_month(..., ${date.toString()}, ${n})`);
+    c.month_date = new Array(n+1);
     c.month_date[0] = date;
-    const dt = (29.5 / (n-1))*c.millis_per_day;
-    for (var i = 1; i <= n; i += 1) {
+    const dt = (29.5 / (n-1))*millis_per_day;
+    for (let i = 1; i <= n; i += 1) {
         const from_date = new Date(c.month_date[i-1].getTime()+dt);
         c.month_date[i] = moon_at_phase(from_date, (i*(360/n))%360);
     }
@@ -62,7 +66,7 @@ const compute_planets = (c) => {
         while (d != null && d.getTime() < c.max_date.getTime()) {
             d.planet = p;
             c.planet_date.push(d);
-            d = moon_planet_conjunction(new Date(d.getTime()+c.millis_per_day), p);
+            d = moon_planet_conjunction(new Date(d.getTime()+millis_per_day), p);
         }
     }
     return c.planet_date;
@@ -92,7 +96,10 @@ const compute_zodiac = (c) => {
 }
 
 const compute = (c) => {    
-    c.m_date = compute_month(c, moon_at_phase(c.start, 0).getTime(), c.phases)
+    c.start0 = moon_at_phase(c.start, 0);
+    // console.log(`moon_at_phase(${c.start}, 0) returned ${c.start0}`);
+    c.m_date = compute_month(c, c.start0, c.phases)
+    // console.log(`compute_month returned ${c.m_date.map((d) => d).join(', ')}`);
     c.min_date = c.m_date[0];
     c.max_date = c.m_date[c.phases];
     if (c.draw.planets)
@@ -105,6 +112,7 @@ const compute = (c) => {
     // mark the zodiac or first point of aries
     if (c.draw.zodiac || c.draw.aries)
 	c.z_date = compute_zodiac(c);
+    return c;
 }
 ////////////////////////////////////////////////////////////////////////
 //
@@ -186,11 +194,10 @@ function moon_at_phase(date0, phase) {
         return (de > 180) ? (de - 360) : (de < -180) ? (de + 360) : de;
     }
     function moon_at_phase_time(time0) {
-        var millis_per_degree = (27.3*24*60*60*1000) / 360;
-        var x0 = time0;
-        var y0 = error_in_moon_phase(x0);
-        var x1 = x0 + 1.25 * y0 * millis_per_degree;
-        var y1 = error_in_moon_phase(x1);
+        const x0 = time0;
+        const y0 = error_in_moon_phase(x0);
+        const x1 = x0 + 1.25 * y0 * millis_per_degree;
+        const y1 = error_in_moon_phase(x1);
         return find_zero_by_brents_method(error_in_moon_phase, x0, y0, x1, y1);
     }
     return new Date(moon_at_phase_time(date0.getTime()));
@@ -208,12 +215,15 @@ function find_zero_by_brents_method(f, x0, y0, x1, y1) {
     // Index 0 is the old approximation for the root.
     // Index 1 is the last calculated approximation  for the root.
     // Index 2 is a bracket for the root with respect to x1.
-        
+
+    // See if we're already there
+    if (Math.abs(y1) <= functionValueAccuracy) {
+	return x1;
+    }
+
     // Verify bracketing
     if (y0 * y1 >= 0) {
-        throw  "Function values at endpoints do not have different signs." +
-                    "  Endpoints: [" + min + "," + max + "]" + 
-                    "  Values: [" + y0 + "," + y1 + "]";       
+        throw  `Function values [${y0},${y1}] at endpoints [${x0},${x1}] do not have different signs.`;       
     }   
 
     var x2 = x0;
@@ -223,7 +233,7 @@ function find_zero_by_brents_method(f, x0, y0, x1, y1) {
 
     var i = 0;
     while (i < maximalIterationCount) {
-        // System.out.print("brent at i "+i+" x0 "+x0+" y0 "+y0+" x1 "+x1+" y1 "+y1+" x2 "+x2+" y2 "+y2+"\n");
+        // console.log(`brent at i ${i} x0 ${x0} y0 ${y0} x1 ${x1} y1 ${y1} x2 ${x2} y2 ${y2}`);
         if (Math.abs(y2) < Math.abs(y1)) {
             x0 = x1;
             x1 = x2;
@@ -236,14 +246,14 @@ function find_zero_by_brents_method(f, x0, y0, x1, y1) {
             // Avoid division by very small values. Assume
             // the iteration has converged (the problem may
             // still be ill conditioned)
-            // alert("brent found "+y1+" in "+i+" iterations");
+            // console.log(`brent found ${y1} in ${i} iterations`);
             return x1;
         }
         var dx = (x2 - x1);
         var tolerance =
             Math.max(relativeAccuracy * Math.abs(x1), absoluteAccuracy);
         if (Math.abs(dx) <= tolerance) {
-            // alert("brent found "+y1+" in "+i+" iterations");
+            // console.log("brent found "+y1+" in "+i+" iterations");
             return x1;
         }
         if ((Math.abs(oldDelta) < tolerance) || (Math.abs(y0) <= Math.abs(y1))) {
@@ -343,9 +353,9 @@ const ephemerides_at_time = (t) => {
 // handle worker interface
 //
 onmessage = (e) => {
-    console.log(`worker in generate.js received ${e.data}`);
+    // console.log(`worker in generate.js received ${e.data}`);
     let result = compute(e.data);
-    console.log(`worker in generate.js computed ${result}`);
+    // console.log(`worker in generate.js computed ${result}`);
     postMessage(result);
 }
 

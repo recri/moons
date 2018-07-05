@@ -25,9 +25,9 @@
 //
 // generate the <path> for a polygon that represents
 // a moon with elongation from the sun: phase; centered
-// at: cx, cy; with radius: r; and using n points.
+// at: 0, 0; with radius: r; and using n points.
 //
-export function phase_path_points(phase, cx, cy, r, n) {
+export function phase_path_points(phase, r, n) {
     var xy = "";
     var cosphase = Math.cos((180-phase)*2*3.14159/360);
     var cmd = "M";
@@ -37,9 +37,7 @@ export function phase_path_points(phase, cx, cy, r, n) {
         var y = -r*Math.cos(radians);
         if (phase != 0 && ((phase < 180 && i > n/2) || (phase > 180 && i < n/2)))
             x *= cosphase;
-        x += cx;
-        y += cy;
-        xy += ""+cmd+""+x+","+y;
+        xy += `${cmd}${Math.round(x)},${Math.round(y)}`;
         cmd = "L";
     }
     xy += "Z";

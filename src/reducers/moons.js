@@ -11,8 +11,7 @@ import {
 import { store } from '../store.js';
 
 const moons = (state = { 
-    search: '',
-    monthData: []
+    search: ''
 }, action) => {
     switch (action.type) {
     case SEARCH: return {...state, search: action.search };

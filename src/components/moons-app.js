@@ -26,7 +26,7 @@ import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 import { store } from '../store.js';
 import { navigate, updateDrawerState, updateLayout, installPrompt, updateOffline } from '../actions/app.js';
-import { newSearch, newMonthData } from '../actions/moons.js';
+import { newSearch } from '../actions/moons.js';
 
 import { menuIcon } from './app-icons.js';
 
