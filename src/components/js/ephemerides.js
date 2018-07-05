@@ -40,14 +40,16 @@ const floor = Math.floor;
 const ceil = Math.ceil;
 const log = Math.log;
 const LN10 = Math.LN10
-const sin = Math.sin;
-const cos = Math.cos;
 const PI = Math.PI;
-const sqrt = Math.sqrt;
-const atan = Math.atan;
+const sin = Math.sin;
+const asin = Math.asin;
+const cos = Math.cos;
+const acos = Math.acos;
 const tan = Math.tan;
-const pow = Math.pow;
+const atan = Math.atan;
 const atan2 = Math.atan2;
+const sqrt = Math.sqrt;
+const pow = Math.pow;
 
 // additional math functions with simplified calling
 //
@@ -63,7 +65,8 @@ const degrees = (radians) => radians * 57.2957795131;
 const log10 = (a) => log(a)/LN10;
 const TWOPI = 2*PI;
 
-export class Ephemerides {
+// export 
+class Ephemerides {
     
     constructor(y, m, D, UTC, Epoch) {
 	this.y = y;
@@ -82,10 +85,10 @@ export class Ephemerides {
         this.lon_corr = Epoch ? Ephemerides.longitudeEcliptic(this.d, Epoch) : 0;
 
         // compute the mean orbital elements
-        for (planet in Ephemerides.Planets) {
+        for (let planet in Ephemerides.Planets) {
 	    this[planet] = new Object();
 	    if (planet != 'Pluto') {
-                for (element in Ephemerides.Elements) {
+                for (let element in Ephemerides.Elements) {
 		    this[planet][element] = Ephemerides[planet][element](this.d);
 		    if (element == 'M' || element == 'N' || element == 'w')
                         this[planet][element] = posdegrees(this[planet][element]);
@@ -94,7 +97,7 @@ export class Ephemerides {
         }
 
         // determine the positions of the planets
-        for (planet in Ephemerides.Planets) {
+        for (let planet in Ephemerides.Planets) {
 
             // compute ecliptic longitude and latitude
             Ephemerides[planet].position(this, planet);
@@ -139,13 +142,14 @@ export class Ephemerides {
                     this[planet].d = Ephemerides[planet].d(r);
 
 		// elongation and phase
+		var FV;
 		if (planet != 'Moon') {
                     var s = this.Sun.r;
                     var R = rg;
                     this[planet].elong = degrees(acos( ( s*s + R*R - r*r ) / (2*s*R) ));
                     if (lonecl > this.Sun.lonecl+180 || (lonecl > this.Sun.lonecl-180 && lonecl < this.Sun.lonecl))
 			this[planet].elong *= -1;
-                    const FV = this[planet].FV = degrees(acos( ( r*r + R*R - s*s ) / (2*r*R) ));
+                    FV = this[planet].FV = degrees(acos( ( r*r + R*R - s*s ) / (2*r*R) ));
                     if (planet == 'Saturn') {
 			const los = lonecl;
 			const las = latecl;
@@ -161,10 +165,10 @@ export class Ephemerides {
                     var mlon = lonecl;
                     var mlat = latecl;
                     var slon = this.Sun.lonecl;
-                    this[planet].elong = degrees(acos( cos(radians(slon-mlon)) * cos(radians(mlat)) ));
+                    var elong = this[planet].elong = degrees(acos( cos(radians(slon-mlon)) * cos(radians(mlat)) ));
                     if (mlon > slon+180 || (mlon > slon-180 && mlon < slon))
-			this[planet].elong *= -1;
-                    this[planet].FV = 180 - elong;
+			elong = this[planet].elong *= -1;
+                    FV = this[planet].FV = 180 - elong;
 		}
 		this[planet].phase = ( 1 + cos(radians(FV)) ) / 2;
             }
@@ -368,6 +372,9 @@ Ephemerides.Sun = {
         // to compute geocentric coordinates for other bodies, we
         // name some things differently
 	//  const E = eph.Sun.E = Ephemerides.(M, e, M + degrees(e) * sin(radians(M)) * (1.0 + e * cos(radians(M))));
+	const M = eph.Sun.M;
+	const e = eph.Sun.e;
+	const w = eph.Sun.w;
         const E = eph.Sun.E = Ephemerides.eccentricAnomaly(M, e, M);
         const xv = eph.Sun.xv = cos(radians(E)) - e;
         const yv = eph.Sun.yv = sqrt(1 - e*e) * sin(radians(E));
@@ -392,6 +399,12 @@ Ephemerides.generic_position = function(eph, planet) {
     // this function serves for the moon and all the planets
     // other than Pluto
     // const E = eph[planet].E = Ephemerides.eccentricAnomaly(M, e, M + degrees(e) * sin(radians(M)) * (1.0 + e * cos(radians(M))));
+    const M = eph[planet].M;
+    const e = eph[planet].e;
+    const a = eph[planet].a;
+    const N = eph[planet].N;
+    const w = eph[planet].w;
+    const i = eph[planet].i;
     const E = eph[planet].E = Ephemerides.eccentricAnomaly(M, e, M);
     const xv = eph[planet].xv = a * ( cos(radians(E)) - e );
     const yv = eph[planet].yv = a * ( sqrt(1 - e*e) * sin(radians(E)));

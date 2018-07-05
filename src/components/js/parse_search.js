@@ -30,51 +30,41 @@
 // optionally validate values
 //
 
-export function parse_search(search, proto, defaults, validations) {
-    var params = new Object();
+export const parse_search = (search, {proto, defaults, validations, params}) => {
 
     //
     // merge default values into the params arrays
     //
-    function merge_defaults() {
-        if (defaults != null) {
+    const merge_defaults = () => {
+        if (defaults) {
             for (var i in defaults) {
-                if (params[i] == null) {
-                    if (defaults[i] == null)
-                        alert("default for "+i+" is null?");
-                    params[i] = defaults[i];
+                if (typeof params[i] === 'undefined') {
+                    if (typeof defaults[i] === 'undefined')
+                        alert("no default for "+i+"?");
+		    else
+			params[i] = defaults[i];
                 }
             }
         }
-        return params;
     }
     //
     // validate values in params
     //
-    function validate_values() {
-        if (validations != null) {
+    const validate_values = () => {
+        if (validations) {
             for (var i in params) {
-                if (params[i] == null)
-                    alert("param for "+i+" is null?");
-                else if (validations[i] == null)
-                    alert("validation function for "+i+" is null?");
+                if (typeof params[i] === 'undefined')
+                    alert("no param for "+i+"?");
+                else if (typeof validations[i] === 'undefined')
+                    alert("no validation function for "+i+"?");
                 else
                     params[i] = validations[i](params[i]);
-                
             }
         }
-        return params;
     }
     
-    var vals = unescape(search.substr(1).replace(/\+/g, ' ')).split('&');
-    // alert("decoding params from: "+search);
-    // alert("split into "+vals.length+" values");
-    for (var i in vals) {
-        var nv = vals[i].split('=');
-        var name = nv[0];
-        var value = nv[1];
-        // alert("parsing parameter "+i+" from string: "+vals[i]+", decoded name='"+name+"' and value='"+value+"'");
-        if (proto[name] != null) {
+    for (let [name, value] of new URLSearchParams(search)) {
+        if (proto[name]) {
             if (proto[name] != name)
                 name = proto[name];
             params[name] = value;
@@ -82,7 +72,9 @@ export function parse_search(search, proto, defaults, validations) {
             alert("unrecognized parameter: '"+name+"' with value '"+value+"'");
         }
     }
-    params = merge_defaults();
-    params = validate_values();
+
+    merge_defaults();
+    validate_values();
+
     return params;
 }

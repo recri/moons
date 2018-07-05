@@ -26,8 +26,10 @@ import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 import { store } from '../store.js';
 import { navigate, updateDrawerState, updateLayout, installPrompt, updateOffline } from '../actions/app.js';
+import { newSearch, newMonthData } from '../actions/moons.js';
 
 import { menuIcon } from './app-icons.js';
+
 import './moons-calendar.js'; // non-lazy import for default page
 
 class MoonsApp extends connect(store)(LitElement) {
@@ -54,12 +56,9 @@ class MoonsApp extends connect(store)(LitElement) {
     _render({appTitle, _page, _drawerOpened, _wideLayout, _install}) {
 	// Anythinga that's related to rendering should be done in here.
 	// construct an install button when it's been signaled
-	const installPrompt = _install ?
-	      html`<button on-click="${this._installPrompt.bind(this)(_install)}">Install</button>` :
-	      html``;
-	      (new URL()).searchParams :
-	      new URLSearchParams(default_query_string(new Date()));
-	
+	const installPrompt = ! _install ? html`` :
+	      html`<button on-click="${this._installPrompt.bind(this)(_install)}">Install</button>`;
+
 	return html`
     <style>
       :host {
@@ -207,7 +206,7 @@ class MoonsApp extends connect(store)(LitElement) {
 
     <!-- Main content -->
     <main class="main-content">
-      <moons-calendar class="page" active?="${_page === 'moons'}" search=${document.location.search}>
+      <moons-calendar class="page" active?="${_page === 'moons'}">
 	<button class="delegated menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
       </moons-calendar>
       <moons-settings class="page" active?="${_page === 'settings'}">
@@ -229,7 +228,10 @@ class MoonsApp extends connect(store)(LitElement) {
     }
 
     _firstRendered() {
-	installRouter((location) => store.dispatch(navigate(window.decodeURIComponent(location.pathname))));
+	installRouter((location) => { 
+	    store.dispatch(navigate(window.decodeURIComponent(location.pathname), 'moons'));
+	    store.dispatch(newSearch(window.decodeURIComponent(location.search)));
+	});
 	installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
 	// installMediaQueryWatcher(`(min-width: 768px)`, (matches) => store.dispatch(updateLayout(matches)));
     }
