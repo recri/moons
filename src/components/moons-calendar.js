@@ -115,13 +115,29 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	// console.log(`_render pnew0=${pnew0} pfull=${pfull} pnew1=${pnew1}`);
 	// console.log(`_render start=${start} months=${months} phases=${phases} days=${days} border=${border} millis_per_day=${millis_per_day}`);
 	// console.log(`_render ${month_data && month_data.length} months, draw.moons ${draw.moons}`);
-	const draw_nil = () => svg``;
-	const line_node_vertical = (x, y1, y2) => svg`<line x1$="${x}" y1$="${y1}" x2$="${x}" y2$="${y2}" />`;
-	const triangle_node = (x1,y1, x2,y2, x3,y3) => svg`<poly d$="M${x1},${y1}L${x2},${y2} ${x3},${y3}Z" />`;
-	const text_node = (x, y, className, text) => svg`<text x$="${x}" y$="${y}" class$="${className}">${text}</text>`
-	const generate_title = () => draw_nil();
+
+	// return svg templates
+	const draw_nil = () => 
+	      svg``;
+	const line_node_vertical = (x, y1, y2) => 
+	      svg`<line x1$="${x}" y1$="${y1}" x2$="${x}" y2$="${y2}" />`;
+	const triangle_node = (x1,y1, x2,y2, x3,y3) => 
+	      svg`<poly d$="M${x1},${y1}L${x2},${y2} ${x3},${y3}Z" />`;
+	const text_node = (x, y, className, text) => 
+	      svg`<text x$="${x}" y$="${y}" class$="${className}">${text}</text>`
+
+	// returns a string formatted date
+	const format_date = (d) => 
+	      `${d.getUTCFullYear()}.${1+d.getUTCMonth()}.${d.getUTCDate()}`;
+
+	// return svg templates
+	const generate_title = () => {
+	    console.log('generate_title called');
+	    return text_node(width/2, fy - scale/2, "calendartitle", `${format_date(this.min_date)} - Moons - ${format_date(this.max_date)}`);
+	}
 	const generate_month = (month, index) => {
-	    const tfull = month.m_date[pfull].getTime();
+	    const mnew0 = month.m_date[pnew0], mfull = month.m_date[pfull], mnew1 = month.m_date[pnew1];
+	    const tnew0 = mnew0.getTime(), tfull = mfull.getTime(), tnew1 = mnew1.getTime();
 	    const x_for_time = (t) => Math.round(
 		width/2 +		// the x coordinate of the full moon
 		((tfull -		// the time of the full moon
@@ -130,8 +146,8 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 		scale			// times the width of the day
 	    );
 	    const draw_frame = () => {
-		const x1 = x_for_time(millis_per_day*Math.floor(1+month.m_date[pnew1].getTime()/millis_per_day));
-		const x2 = x_for_time(millis_per_day*Math.floor(month.m_date[pnew0].getTime()/millis_per_day));
+		const x1 = x_for_time(millis_per_day*Math.floor(1+tnew1/millis_per_day));
+		const x2 = x_for_time(millis_per_day*Math.floor(tnew0/millis_per_day));
 		return svg`<rect class="frame" x$=${x1} y=0 width$=${x2-x1} height$=${scale-1} />`;
  	    }
 	    const draw_moons = () => {
@@ -150,9 +166,9 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 		const day_triangular_tick = (x, h) => triangle_node(x,0.95*h, x-0.05*h,h, x,h);
 		const day_tick_node = (x, h, d) => day_triangular_tick(x, h);
 		const day_number_node = (x, h, d) => text_node(x-3, h-3, "daynumber", `${d}`);
-		const f_t = month.m_date[pfull].getTime() / millis_per_day;                   // fractional date of full moon
-		const n1_d = Math.floor(month.m_date[pnew0].getTime() / millis_per_day);      // day of 1st new moon        
-		const n2_d = Math.floor(month.m_date[pnew1].getTime() / millis_per_day);      // day of 2nd new moon
+		const f_t = tfull / millis_per_day;                   // fractional date of full moon
+		const n1_d = Math.floor(tnew0 / millis_per_day);      // day of 1st new moon        
+		const n2_d = Math.floor(tnew1 / millis_per_day);      // day of 2nd new moon
 		const day_markers = [];
 		for (let d = n1_d; d <= n2_d+1; d += 1) {
 		    const t = d*millis_per_day;
@@ -170,19 +186,17 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	    }
 	    const draw_new_moon_dates = () => {
 		const new_moon_date = (x, y, w, h, fill, date, className) =>
-		      text_node(x,y,`newmoondate ${className}`,`${date.getUTCFullYear()}.${(1+date.getUTCMonth())}.${date.getUTCDate()}`);
+		      text_node(x,y,`newmoondate ${className}`,format_date(date));
 		const new_moon_date_left = (x, y, w, h, fill, date) =>
 		      new_moon_date(x-4, y-(h/3), w, h, fill, date, "left");
 		const new_moon_date_right = (x, y, w, h, fill, date) => 
 		      new_moon_date(x+4, y-(h/3), w, h, fill, date, "right");
 		const w = scale;
-		const d0 = month.m_date[pnew0];
-		const d1 = month.m_date[pnew1];
-		const x0 = x_for_time(d0.getTime()-millis_per_day);
-		const x1 = x_for_time(d1.getTime()+millis_per_day); 
+		const x0 = x_for_time(tnew0-millis_per_day);
+		const x1 = x_for_time(tnew1+millis_per_day); 
 		return svg`
-			${new_moon_date_right(x0, w, w, w, "white", d0)}
-			${new_moon_date_left(x1, w, w, w, "white", d1)}
+			${new_moon_date_right(x0, w, w, w, "white", mnew0)}
+			${new_moon_date_left(x1, w, w, w, "white", mnew1)}
 		`;
 	    }
 	    const draw_planets = () => draw_nil();
@@ -204,10 +218,19 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
   ${draw.mondays ? draw_mondays() : draw_nil()}
 </g>`
 	}
-	const generate_copyright = () => draw_nil();
-/*
 
-*/
+	const generate_copyright = () => {
+	    console.log('generate_copyright called');
+	    return text_node(width/2, fy+(months+1)*scale, "copyright",
+			`${format_date(this.min_date)} - Moons - ${format_date(this.max_date)}, `+
+			     "Copyright \xa9 2018 by Roger E Critchlow Jr, Charlestown, MA, USA, "+
+			     "http://elf.org/moons");
+	}
+
+	// console.log(`draw.title = ${draw.title}, draw.copyright = ${draw.copyright}, month_data = ${month_data}`);
+	// if (month_data) console.log(`month_data.length = ${month_data.length}, months = ${months}`);
+	// console.log(`min_date ${this.min_date}, max_date ${this.max_date}`);
+	 
 	return html`
 <style>
   .slot{position:fixed;top:25px;left:25px;color:white;stroke:white;fill:white;}
@@ -221,18 +244,28 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
   .newmoondate{font-size:500px}
   .newmoondate.left{text-anchor:end}
   .newmoondate.right{text-anchor:start}
+  .calendartitle{font-size:500px;text-anchor:middle}
+  .copyright{font-size:333px;text-anchor:middle}
 </style>
 <div class="view">
   <svg viewBox="0 0 45000 44000" width="100%">
     <rect width="100%" height="100%" fill="black" />
+    ${month_data && month_data.length == months && draw.title ? generate_title() : ''}
     ${month_data ? month_data.map((month, index) => generate_month(month, index)) : ''}
-    ${month_data && month_data.length === months && draw.title ? generate_title() : ''}
-    ${month_data && month_data.length === months && draw.copyright ? generate_copyright() : ''}
+    ${month_data && month_data.length == months && draw.copyright ? generate_copyright() : ''}
   </svg>
 </div>
 <slot class="slot">
 </slot>
     `
+    }
+    get min_date() {
+	const md = this.month_data;
+	return (md && md.length > 0) ? md[0].min_date : undefined;
+    }
+    get max_date() {
+	const md = this.month_data;
+	return (md && md.length > 0) ? md[md.length-1].max_date : undefined;
     }
     _stateChanged(state) {
 	if (this.search !== state.moons.search) {
@@ -260,7 +293,7 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 		this._newworker();
 		this._startworker(this.start);
 	    } else if (this.month_data.length < this.months) {
-		this._startworker(this.month_data[this.month_data.length-1].max_date);
+		this._startworker(this.max_date);
 	    } else {
 		// console.log(`finished computing months`);
 		this._endworker;
