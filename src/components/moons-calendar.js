@@ -161,7 +161,7 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	    }
 	    const draw_day_ticks_and_numbers = () => {
 		const day_vertical_line = (x, h) => line_node_vertical(x, 0, h);
-		const day_triangular_tick = (x, h) => triangle_node(x,0.95*h, x-0.05*h,h, x,h);
+		const day_triangular_tick = (x, h) => triangle_node(x,0.9*h, x-0.1*h,h, x,h);
 		const day_tick_node = (x, h, d) => day_triangular_tick(x, h);
 		const day_number_node = (x, h, d) => text_node(x-3, h-3, "daynumber", `${d}`);
 		const f_t = tfull / millis_per_day;                   // fractional date of full moon
@@ -229,7 +229,6 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	 
 	return html`
 <style>
-  .slot{position:fixed;top:25px;left:25px;color:white;stroke:white;fill:white;}
   .view{position:fixed;top:0px;left:0px;width:100%;background-color:black;}
   svg {stroke-width:10;stroke:white;fill:white}
   .frame{fill:none}
@@ -242,9 +241,10 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
   .newmoondate.right{text-anchor:start}
   .calendartitle{font-size:500px;text-anchor:middle}
   .copyright{font-size:333px;text-anchor:middle}
+  .slot{position:fixed;top:25px;left:25px;z-index:2;}
 </style>
 <div class="view">
-  <svg viewBox="0 0 45000 44000" width="100%">
+  <svg viewBox="0 0 45000 83000" width="100%">
     <rect width="100%" height="100%" fill="black" />
     ${month_data && month_data.length == months && draw.title ? generate_title() : ''}
     ${month_data ? month_data.map((month, index) => generate_month(month, index)) : ''}
@@ -268,6 +268,7 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	    // console.log(`_stateChanged search: '${state.moons.search}' from '${this.search}'`);
 	    this.search = state.moons.search;
 	    for (let [name, value] of Object.entries(params.values)) {
+		if (name === 'search') continue;
 		if ( ! this.hasOwnProperty(name)) {
 		    this[name] = value;
 		    // console.log(`did copy values[${name}] to this`);

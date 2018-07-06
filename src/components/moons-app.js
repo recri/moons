@@ -72,8 +72,8 @@ class MoonsApp extends connect(store)(LitElement) {
         --app-section-even-color: #f0f0f0;
         --app-section-odd-color: white;
 
-        --app-header-background-color: white;
-        --app-header-text-color: var(--app-dark-text-color);
+        --app-header-background-color: black;
+        --app-header-text-color: var(--app-light-text-color);
         --app-header-selected-color: var(--app-primary-color);
 
         --app-drawer-background-color: var(--app-secondary-color);
@@ -82,7 +82,6 @@ class MoonsApp extends connect(store)(LitElement) {
       }
 
       app-header {
-        display: none;
         position: fixed;
         top: 0;
         left: 0;
@@ -91,6 +90,9 @@ class MoonsApp extends connect(store)(LitElement) {
         background-color: var(--app-header-background-color);
         color: var(--app-header-text-color);
         border-bottom: 1px solid #eee;
+      }
+      app-header[suppressed] {
+	display:none;
       }
       app-drawer { z-index: 4 }
       .toolbar-top {
@@ -110,8 +112,17 @@ class MoonsApp extends connect(store)(LitElement) {
         cursor: pointer;
         height: 44px;
         width: 44px;
+	z-index: 2;
       }
-
+      button.menu-btn.fixed {
+	position:fixed;
+	left:5px;
+	top:5px;
+        z-index: 10;
+      }
+      button.menu-btn.fixed[suppressed] {
+	display:none;
+      }
       .drawer-list {
         box-sizing: border-box;
         width: 100%;
@@ -156,11 +167,13 @@ class MoonsApp extends connect(store)(LitElement) {
       }
 
       footer {
-        display:none;
         padding: 24px;
         background: var(--app-drawer-background-color);
         color: var(--app-drawer-text-color);
         text-align: center;
+      }
+      footer[suppressed] {
+	display:none;
       }
       footer a {
         color: var(--app-drawer-text-color);
@@ -175,7 +188,6 @@ class MoonsApp extends connect(store)(LitElement) {
         }
 
         .menu-btn {
-          /* display: none; */
         }
 
         [main-title] {
@@ -185,12 +197,11 @@ class MoonsApp extends connect(store)(LitElement) {
     </style>
 
     <!-- Header -->
-    <app-header condenses reveals effects="waterfall">
+    <app-header suppressed?=${_page==='moons'} condenses reveals effects="waterfall">
       <app-toolbar class="toolbar-top">
         <button class="menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
         <div main-title>${appTitle}</div>
       </app-toolbar>
-
     </app-header>
 
     <!-- Drawer content -->
@@ -207,22 +218,20 @@ class MoonsApp extends connect(store)(LitElement) {
     <!-- Main content -->
     <main class="main-content">
       <moons-calendar class="page" active?="${_page === 'moons'}">
-	<button class="delegated menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
       </moons-calendar>
-      <moons-settings class="page" active?="${_page === 'settings'}">
-	<button class="delegated menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
-      </moons-test>
-      <moons-about class="page" active?="${_page === 'about'}">
-	<button class="delegated menu-btn" title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">${menuIcon}</button>
-      </moons-about>
+      <moons-settings class="page" active?="${_page === 'settings'}"></moons-settings>
+      <moons-about class="page" active?="${_page === 'about'}"></moons-about>
       <app-404 class="page" active?="${_page === '404'}"></app-404>
     </main>
 
-    <footer>
+    <footer suppressed?=${_page==='moons'}>
       <p>
 	<a href="https://elf.org/moons" rel="noopener" target="_blank" title="home page">elf.org/calculator</a>
       <p>
     </footer>
+    <!-- Floating menu button -->
+    <button class="menu-btn fixed" suppressed?=${_page!=='moons'} title="Menu" on-click="${_ => store.dispatch(updateDrawerState(true))}">
+      ${menuIcon}</button>
 
     `;
     }
