@@ -68,9 +68,9 @@ const params = {
             moons: true,
             day_ticks: true,
             day_numbers: true,
-            planets: false,
+            planets: true,
             orbital_gees: false,
-            orbital_nodes: false,
+            orbital_nodes: true,
             new_moon_dates: true,
             title: true,
             copyright: true
@@ -121,10 +121,14 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	      svg``;
 	const line_node_vertical = (x, y1, y2) => 
 	      svg`<line x1$="${x}" y1$="${y1}" x2$="${x}" y2$="${y2}" />`;
-	const triangle_node = (x1,y1, x2,y2, x3,y3) => 
-	      svg`<poly d$="M${x1},${y1}L${x2},${y2} ${x3},${y3}Z" />`;
+	const triangle_node = (x1,y1, x2,y2, x3,y3, className) => 
+	      svg`<path d$="M${x1},${y1}L${x2},${y2} ${x3},${y3}Z" class$="${className}" />`;
 	const text_node = (x, y, className, text) => 
 	      svg`<text x$="${x}" y$="${y}" class$="${className}">${text}</text>`
+	const top_tick_node = (x, h, className) => triangle_node(x,0.1*h, x,0, x-0.1*h,0, className);
+	const btm_tick_node = (x, h, className) => triangle_node(x,0.9*h, x,h, x-0.1*h,h, className);
+	const top_text_node = (x, h, className, t) => text_node(x-100, 250, className, t);
+	const btm_text_node = (x, h, className, t) => text_node(x-100, h-100, className, t);
 
 	// returns a string formatted date
 	const format_date = (d) => 
@@ -161,9 +165,8 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 	    }
 	    const draw_day_ticks_and_numbers = () => {
 		const day_vertical_line = (x, h) => line_node_vertical(x, 0, h);
-		const day_triangular_tick = (x, h) => triangle_node(x,0.9*h, x-0.1*h,h, x,h);
-		const day_tick_node = (x, h, d) => day_triangular_tick(x, h);
-		const day_number_node = (x, h, d) => text_node(x-3, h-3, "daynumber", `${d}`);
+		const day_tick_node = (x, h, d) => btm_tick_node(x, h, "daytick");
+		const day_number_node = (x, h, d) => btm_text_node(x, h, "daynumber", `${d}`);
 		const f_t = tfull / millis_per_day;                   // fractional date of full moon
 		const n1_d = Math.floor(tnew0 / millis_per_day);      // day of 1st new moon        
 		const n2_d = Math.floor(tnew1 / millis_per_day);      // day of 2nd new moon
@@ -174,7 +177,7 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 		    const h = scale;
 		    const day = new Date(t).getUTCDate();   // day of month, UTC
 		    if (draw.day_ticks)
-			day_markers.push(day_tick_node(x, h, day));
+			day_markers.push(day_tick_node(x, h));
 		    if (draw.day_numbers && d != n2_d+1)
 			day_markers.push(day_number_node(x, h, day));
 		    if (d == n1_d || d == n2_d+1)
@@ -197,9 +200,26 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
 			${new_moon_date_left(x1, w, w, w, "white", mnew1)}
 		`;
 	    }
-	    const draw_planets = () => draw_nil();
+	    const draw_planets = () => {
+		const planet_map = { Mercury: '☿', Venus: '♀', Mars: '♂', Jupiter: '♃', Saturn: '♄', Uranus: '⛢', Neptune: '♆', Pluto: '♇' }; 
+		const planet_markers = [];
+		month.p_date.forEach(([planet,d]) => {
+		    const x = x_for_time(d.getTime())
+		    planet_markers.push(top_text_node(x, scale, `planet ${planet}`, planet_map[planet]), top_tick_node(x, scale, "planettick"));
+		});
+		return svg`${planet_markers}`
+	    }
 	    const draw_gees = () => draw_nil();
-	    const draw_nodes = () => draw_nil();
+	    const draw_nodes = () => {
+		const node_map = { ascending: '☊', descending: '☋', conjunction: '☌', opposition: '☍' }; 
+		const node_markers = [];
+		month.n_date.forEach(([node,d]) => {
+		    const x = x_for_time(d.getTime());
+		    // console.log(`drawing ${node} node ${node_map[node]} at ${x}`);
+		    node_markers.push(top_text_node(x, scale, "node", node_map[node]), top_tick_node(x, scale, "nodetick"));
+		});
+		return svg`${node_markers}`;
+	    }
 	    const draw_zodiac = () => draw_nil();
 	    const draw_mondays = () => draw_nil();
 	    return svg`
@@ -210,8 +230,8 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
   ${draw.day_ticks || draw.day_numbers ? draw_day_ticks_and_numbers() : draw_nil()}
   ${draw.new_moon_dates ? draw_new_moon_dates() : draw_nil()}
   ${draw.planets ? draw_planets() : draw_nil()}
-  ${draw.gees ? draw_gees() : draw_nil()}
-  ${draw.nodes ? draw_nodes() : draw_nil()} 
+  ${draw.orbital_gees ? draw_gees() : draw_nil()}
+  ${draw.orbital_nodes ? draw_nodes() : draw_nil()} 
   ${draw.aries || draw.zodiac ? draw_zodiac() : draw_nil()}
   ${draw.mondays ? draw_mondays() : draw_nil()}
 </g>`
@@ -235,6 +255,10 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
   .moon{}
   .moon.new{fill:none}
   text{}
+  .planettick,.nodetick{stroke:none;stroke-width:0}
+  .planet,.node{text-anchor:end;font-size:250px}
+  .planet.Mars,.planet.Venus{font-size:375px}
+  .daytick{stroke:none;stroke-width:0}
   .daynumber{text-anchor:end;font-size:250px}
   .newmoondate{font-size:500px}
   .newmoondate.left{text-anchor:end}

@@ -125,6 +125,9 @@ class Ephemerides {
 		const xg = this[planet].xg;
 		const yg = this[planet].yg;
 		const zg = this[planet].zg;
+		// compute geocentric lonecl and latecl
+		this[planet].loneclg = posdegrees(degrees(atan2(yg, xg)) + this.lon_corr);
+		this[planet].lateclg = degrees(atan2(zg, sqrt(xg*xg + yg*yg)));
 		// geocentric equatorial coordinates
 		const xe = this[planet].xe = xg;
 		const ye = this[planet].ye = yg * cos(radians(this.ecl)) - zg * sin(radians(this.ecl));
@@ -427,15 +430,15 @@ Ephemerides.Moon = {
     M: function(d) { return 115.3654 + 13.0649929509 * d },
     position: Ephemerides.generic_position,
     perturbation: function(eph, planet) {
-        var Ms = eph.Sun.M;			// Mean Anomaly of the Sun and the Moon
+        var Ms = eph.Sun.M;	// Mean Anomaly of the Sun and the Moon
         var Mm = eph.Moon.M;
-        var Nm = eph.Moon.N;			// Longitude of the Moon's node
-        var ws = eph.Sun.w;			// Argument of perihelion for the Sun and the Moon
+        var Nm = eph.Moon.N;	// Longitude of the Moon's node
+        var ws = eph.Sun.w;	// Argument of perihelion for the Sun and the Moon
         var wm = eph.Moon.w;
-        var Ls = Ms + ws;             // Mean Longitude of the Sun  (Ns=0)
-        var Lm = Mm + wm + Nm;		// Mean longitude of the Moon
-        var D = Lm - Ls;              // Mean elongation of the Moon
-        var F = Lm - Nm;              // Argument of latitude for the Moon
+        var Ls = Ms + ws;	// Mean Longitude of the Sun  (Ns=0)
+        var Lm = Mm + wm + Nm;	// Mean longitude of the Moon
+        var D = Lm - Ls;	// Mean elongation of the Moon
+        var F = Lm - Nm;	// Argument of latitude for the Moon
         eph.Moon.lonecl += (0
     			    -1.274 * sin(radians(Mm - 2*D))
     			    +0.658 * sin(radians(2*D))
@@ -626,3 +629,5 @@ Ephemerides.Pluto = {
     d: (r) => 8.2 / r,
 };
 
+if (typeof module !== 'undefined')
+    module.exports = Ephemerides;

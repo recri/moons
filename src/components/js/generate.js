@@ -44,14 +44,14 @@ const millis_per_degree = (27.3*24*60*60*1000) / 360; // milliarcseconds per deg
 //
 const compute_month = (c, date, n) => {
     // console.log(`compute_month(..., ${date.toString()}, ${n})`);
-    c.month_date = new Array(n+1);
-    c.month_date[0] = date;
+    const month_date = new Array(n+1);
+    month_date[0] = date;
     const dt = (29.5 / (n-1))*millis_per_day;
     for (let i = 1; i <= n; i += 1) {
-        const from_date = new Date(c.month_date[i-1].getTime()+dt);
-        c.month_date[i] = moon_at_phase(from_date, (i*(360/n))%360);
+        const from_date = new Date(month_date[i-1].getTime()+dt);
+        month_date[i] = moon_at_phase(from_date, (i*(360/n))%360);
     }
-    return c.month_date;
+    return month_date;
 }
 
 //
@@ -59,17 +59,15 @@ const compute_month = (c, date, n) => {
 // from start date to end date
 //
 const compute_planets = (c) => {
-    c.planet_date = new Array();
-    for (i in c.planets) {
-        var p = c.planets[i];
+    planet_date = [];
+    for (let p of c.planets) {
         var d = moon_planet_conjunction(c.min_date, p);
         while (d != null && d.getTime() < c.max_date.getTime()) {
-            d.planet = p;
-            c.planet_date.push(d);
+            planet_date.push([p, d]);
             d = moon_planet_conjunction(new Date(d.getTime()+millis_per_day), p);
         }
     }
-    return c.planet_date;
+    return planet_date;
 }
 
 //
@@ -77,8 +75,15 @@ const compute_planets = (c) => {
 // from start date to end date
 //
 const compute_nodes = (c) => {
-    var nodes = [];
-    return nodes;
+    const node_date = [];
+    for (let node of ['ascending', 'descending']) {
+        var d = moon_node_conjunction(c.min_date, node);
+        while (d != null && d.getTime() < c.max_date.getTime()) {
+            node_date.push([node, d]);
+            d = moon_node_conjunction(new Date(d.getTime()+millis_per_day), node);
+        }
+    } 
+    return node_date;
 }
 
 //
@@ -107,7 +112,7 @@ const compute = (c) => {
     if (c.draw.orbital_gees)
 	c.g_date = compute_gees(c);
     // mark the ascending and descending nodes
-    if (c.draw.nodes)
+    if (c.draw.orbital_nodes)
 	c.n_date = compute_nodes(c);
     // mark the zodiac or first point of aries
     if (c.draw.zodiac || c.draw.aries)
@@ -136,7 +141,7 @@ function moon_planet_conjunction(date0, planet) {
     function degrees_from_conjunction(t) {
         var eph = ephemerides_at_time(t);
         var moonlon = eph.Moon.lonecl;
-        var planetlon = eph[planet].lonecl;
+        var planetlon = eph[planet].loneclg;
         var d = moonlon - planetlon;
         return (d > 180) ? (d - 360) : (d < -180) ? (d + 360) : d;
     }        
@@ -165,6 +170,51 @@ function moon_planet_conjunction(date0, planet) {
     }
 
     var t = moon_planet_conjunction_time(date0.getTime());
+    return t == null ? null : new Date(t);
+}
+
+//
+// find the dates of moon's conjunction with ascending and descending nodes
+//
+function moon_node_conjunction(date0, node) {
+    //
+    // compute how many degrees the moon is away from the planet
+    // this function is positive from 180 degrees behind down
+    // to conjunction, and negative from conjunction up to
+    // -180 degrees behind (ie, ahead).
+    //
+    function degrees_from_conjunction(t) {
+        var eph = ephemerides_at_time(t);
+        var moonlon = eph.Moon.lonecl;
+        var nodelon = eph.Moon.N + (node === 'ascending' ? 0 : 180);
+        var d = moonlon - nodelon;
+        return (d > 180) ? (d - 360) : (d < -180) ? (d + 360) : d;
+    }        
+    function moon_node_conjunction_time(time0) {
+        var times = ephemerides_cached_times();
+        var t0;
+        var d0;
+        for (var i in times) {
+            var t1 = new Number(times[i]);
+            var d1 = degrees_from_conjunction(times[i]);
+            if (t1 < time0) {
+                ;
+            } else if (d1 == 0) {
+                return t1;
+            } else if (t0 == null) {
+                t0 = t1;
+                d0 = d1;
+            } else if (d1 * d0 < 0 && d0 < 0) {
+                return find_zero_by_brents_method(degrees_from_conjunction, t0, d0, t1, d1);
+            } else {
+                t0 = t1;
+                d0 = d1;
+            }
+        }
+        return null;
+    }
+
+    var t = moon_node_conjunction_time(date0.getTime());
     return t == null ? null : new Date(t);
 }
 
