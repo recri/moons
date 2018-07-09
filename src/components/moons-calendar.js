@@ -257,7 +257,7 @@ class MoonsCalendar extends connect(store)(PageViewElement) {
   text{}
   .planettick,.nodetick{stroke:none;stroke-width:0}
   .planet,.node{text-anchor:end;font-size:250px}
-  .planet.Mars,.planet.Venus{font-size:375px}
+/*  .planet.Mars,.planet.Venus{font-size:375px} */
   .daytick{stroke:none;stroke-width:0}
   .daynumber{text-anchor:end;font-size:250px}
   .newmoondate{font-size:500px}
