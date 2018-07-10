@@ -1,9 +1,13 @@
 
-This a progressive web app that simulates the venerable HP 15C calculator.
+This a progressive web app that displays a calendar of moons.
 
-The app is available as https://hp15c.elf.org.
+The app is available at https://moons.elf.org, https://es5.moons.elf.org, and
+https://esm.moons.elf.org.  The es5 and esm links are code transpiled for older
+browsers.
 
 Built with the https://github.com/Polymer/pwa-starter-kit using https://polymer-project.org.
+
+More about the moons calendar and its history at https://elf.org/moons.
 
 To build you'll need to:
 [ ] install nodejs and npm,
